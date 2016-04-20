@@ -89,16 +89,12 @@ static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
     if (SCNetworkReachabilitySetCallback(_reachabilityRef, ReachabilityCallback, &context)) {
         SCNetworkReachabilityScheduleWithRunLoop(_reachabilityRef, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
     }
-    
-    NSLog(@"notifier started");
 }
 
 - (void) stopNotifier {
     if (_reachabilityRef != nil) {
         SCNetworkReachabilityUnscheduleFromRunLoop(_reachabilityRef, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
     }
-    
-    NSLog(@"notifier stopped");
 }
 
 - (void) dealloc {

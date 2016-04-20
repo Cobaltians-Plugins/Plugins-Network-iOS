@@ -56,15 +56,13 @@
 }
 
 - (void) onNetworkStatusChanged: (NSString *) status {
-    NSLog(@"Network status changed: %@", status);
-    
     if ([_listeningControllers anyObject] != nil) {
         NSDictionary * message = @{
-                                   kJSType: kJSTypePlugin,
-                                   kJSPluginName: @"networkStatus",
-                                   kJSAction: @"onStatusChanged",
-                                   kJSData: @{ @"status": status }
-                                   };
+            kJSType: kJSTypePlugin,
+            kJSPluginName: @"networkStatus",
+            kJSAction: @"onStatusChanged",
+            kJSData: @{ @"status": status }
+        };
         
         for (CobaltViewController * viewController in _listeningControllers) {
             if (viewController != nil) {
