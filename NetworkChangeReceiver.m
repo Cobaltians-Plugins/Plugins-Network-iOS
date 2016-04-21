@@ -36,7 +36,7 @@ static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
 
     [self setDelegate: delegate];
 
-	return self;
+    return self;
 }
 
 - (void) setDelegate: (id) delegate {
@@ -57,7 +57,7 @@ static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
     NSString * returnValue = @"none";
 
     // If the network is reachable
-	if (networkReachable) {
+    if (networkReachable) {
         // If the connection has already been established or can be made without intervention
         if (connectionEstablished || ((connectionOnDemand || connectionOnTraffic) && !interventionRequired)) {
             // If the connection is over a mobile network
@@ -66,26 +66,26 @@ static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
             }
             // Otherwise we assume it is over Wifi
             else {
-			    returnValue = @"wifi";
+                returnValue = @"wifi";
             }
-    	}
+        }
     }
 
-	return returnValue;
+    return returnValue;
 }
 
 - (NSString *) getStatus {
-	NSAssert(_reachabilityRef != nil, @"getStatus called with nil SCNetworkReachabilityRef");
+    NSAssert(_reachabilityRef != nil, @"getStatus called with nil SCNetworkReachabilityRef");
 
     // Return "unknown" in case of error while retrieving the connection status
-	NSString * returnValue = @"unknown";
-	SCNetworkReachabilityFlags flags;
+    NSString * returnValue = @"unknown";
+    SCNetworkReachabilityFlags flags;
 
-	if (SCNetworkReachabilityGetFlags(_reachabilityRef, &flags)) {
-		returnValue = [NetworkChangeReceiver networkStatusForFlags: flags];
-	}
+    if (SCNetworkReachabilityGetFlags(_reachabilityRef, &flags)) {
+        returnValue = [NetworkChangeReceiver networkStatusForFlags: flags];
+    }
 
-	return returnValue;
+    return returnValue;
 }
 
 - (void) onNetworkStatusChanged: (NSString *) status {
