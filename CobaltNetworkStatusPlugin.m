@@ -1,4 +1,5 @@
 #import "CobaltNetworkStatusPlugin.h"
+#import <Cobalt/PubSub.h>
 
 @implementation CobaltNetworkStatusPlugin
 
@@ -11,44 +12,30 @@
     return self;
 }
 
-- (void) onMessageFromCobaltController: (CobaltViewController *) viewController
-                               andData: (NSDictionary *) data {
-    [self onMessageWithCobaltController: viewController
-                                andData: data];
-}
+- (void)onMessageFromWebView:(WebViewType)webView
+          inCobaltController:(nonnull CobaltViewController *)viewController
+                  withAction:(nonnull NSString *)action
+                        data:(nullable NSDictionary *)data
+          andCallbackChannel:(nullable NSString *)callbackChannel{
+    
+    if ([action isEqualToString: @"getStatus"]) {
+        NSDictionary * status = @{@"status": [self getStatus]};
+        
+        [[PubSub sharedInstance] publishMessage:status
+                                      toChannel:callbackChannel];
 
-- (void) onMessageFromWebLayerWithCobaltController: (CobaltViewController *) viewController
-                                           andData: (NSDictionary *) data {
-    [self onMessageWithCobaltController: viewController
-                                andData: data];
-}
-
-- (void) onMessageWithCobaltController: (CobaltViewController *) viewController
-                               andData: (NSDictionary *) data {
-    NSString * callback = [data objectForKey: kJSCallback];
-    NSString * action = [data objectForKey: kJSAction];
-
-    if (action != nil) {
-        if ([action isEqualToString: @"getStatus"]) {
-            NSDictionary * status = @{@"status": [self getStatus]};
-
-            [viewController sendCallback: callback
-                                withData: status];
-        }
-        else if ([action isEqualToString: @"startStatusMonitoring"]) {
-            [self startStatusMonitoring: viewController];
-            
-        }
-        else if ([action isEqualToString: @"stopStatusMonitoring"]) {
-            [self stopStatusMonitoring: viewController];
-        }
-        else {
-            NSLog(@"CobaltNetworkStatusPlugin onMessageWithCobaltController:andData: unknown action %@", action);
-        }
+    }
+    else if ([action isEqualToString: @"startStatusMonitoring"]) {
+        [self startStatusMonitoring: viewController];
+        
+    }
+    else if ([action isEqualToString: @"stopStatusMonitoring"]) {
+        [self stopStatusMonitoring: viewController];
     }
     else {
-        NSLog(@"CobaltNetworkStatusPlugin onMessageWithCobaltController:andData: action is nil");
+        NSLog(@"CobaltNetworkStatusPlugin onMessageWithCobaltController:andData: unknown action %@", action);
     }
+
 }
 
 - (NSString *) getStatus {
@@ -59,7 +46,7 @@
     if ([_listeningControllers anyObject] != nil) {
         NSDictionary * message = @{
             kJSType: kJSTypePlugin,
-            kJSPluginName: @"networkStatus",
+            kJSPluginName: @"CobaltNetworkStatusPlugin",
             kJSAction: @"onStatusChanged",
             kJSData: @{ @"status": status }
         };
